@@ -1,0 +1,168 @@
+﻿<Window x:Class="UiTestApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UiTestApp"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="600" Width="525">
+    <Window.DataContext>
+        <local:MainWindowViewModel/>
+    </Window.DataContext>
+    <Grid Margin="20">
+        <StackPanel>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Time to Reload"/>
+                <TextBox Grid.Column="1" Text="{Binding TimeToReloadString, UpdateSourceTrigger=PropertyChanged}"/>
+
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Label Content="RPM"/>
+                <TextBox Grid.Column="1" Text="{Binding Rpm, UpdateSourceTrigger=PropertyChanged}"/>
+
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Label Content="MAG"/>
+                <TextBox Grid.Column="1" Text="{Binding Mag, UpdateSourceTrigger=PropertyChanged}"/>
+
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Weapon Scaler"/>
+                <TextBox Grid.Column="1" Text="{Binding WeaponScalerString, UpdateSourceTrigger=PropertyChanged}"/>
+
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Base Bullet Damage"/>
+                <TextBox Grid.Column="1" Text="{Binding BaseBulletDamageString, UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Firearms"/>
+                <TextBox Grid.Column="1" Text="{Binding Firearms, UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Headshot Damage"/>
+                <TextBox Grid.Column="1" Text="{Binding HeadshotDamageString, UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Reload Speed"/>
+                <TextBox Grid.Column="1" Text="{Binding ReloadSpeedString, UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
+            
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Critical Hit Chance"/>
+                <TextBox Grid.Column="1" Text="{Binding CriticalHitChanceString, UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Critical Hit Damage"/>
+                <TextBox Grid.Column="1" Text="{Binding CriticalHitDamageString, UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Weapon Damage"/>
+                <Label Grid.Column="1" Content="{Binding WeaponDamage}"/>
+
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Displayed Weapon Damage"/>
+                <Label Grid.Column="1" Content="{Binding DisplayedWeaponDamage}"/>
+
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Firepower"/>
+                <Label Grid.Column="1" Content="{Binding Firepower}"/>
+
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="53*" />
+                    <ColumnDefinition Width="185*"/>
+                    <ColumnDefinition Width="239*" />
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Displayed Firepower" Grid.ColumnSpan="2"/>
+                <Label Grid.Column="2" Content="{Binding DisplayedFirepower}"/>
+
+            </Grid>
+
+            <Button Height="30" Content="Calculate Firepower" Command="{Binding CalculateFirepowerButtonCommand}"/>
+            
+        </StackPanel>
+    </Grid>
+</Window>
