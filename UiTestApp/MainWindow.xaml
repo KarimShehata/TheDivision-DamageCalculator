@@ -18,8 +18,11 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
 
-                <Label Content="Time to Reload"/>
-                <TextBox Grid.Column="1" Text="{Binding TimeToReloadString, UpdateSourceTrigger=PropertyChanged}"/>
+                <Label Content="Weapon Type"/>
+                <ComboBox Grid.Column="1" 
+                          ItemsSource="{Binding WeaponTypes}" 
+                          DisplayMemberPath="Name"
+                          SelectedValue="{Binding WeaponType}"/>
 
             </Grid>
 
@@ -29,19 +32,11 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
 
-                <Label Content="RPM"/>
-                <TextBox Grid.Column="1" Text="{Binding Rpm, UpdateSourceTrigger=PropertyChanged}"/>
-
-            </Grid>
-
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-
-                <Label Content="MAG"/>
-                <TextBox Grid.Column="1" Text="{Binding Mag, UpdateSourceTrigger=PropertyChanged}"/>
+                <Label Content="Weapon Variant"/>
+                <ComboBox Grid.Column="1" 
+                          ItemsSource="{Binding WeaponVariants}" 
+                          DisplayMemberPath="Name"
+                          SelectedValue="{Binding WeaponVariant}"/>
 
             </Grid>
 
@@ -52,7 +47,51 @@
                 </Grid.ColumnDefinitions>
 
                 <Label Content="Weapon Scaler"/>
-                <TextBox Grid.Column="1" Text="{Binding WeaponScalerString, UpdateSourceTrigger=PropertyChanged}"/>
+                <local:AutoSelectingTextbox Grid.Column="1" Text="{Binding WeaponScalerString, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
+
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Label Content="RPM"/>
+                <local:AutoSelectingTextbox Grid.Column="1" Text="{Binding Rpm, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
+
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Label Content="MAG"/>
+                <local:AutoSelectingTextbox Grid.Column="1" Text="{Binding BaseMagazineSize, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
+
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Time to Reload"/>
+                <local:AutoSelectingTextbox Grid.Column="1" Text="{Binding TimeToReloadString, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
+
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Label Content="X"/>
+                <local:AutoSelectingTextbox Grid.Column="1" Text="{Binding XString, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
 
             </Grid>
 
@@ -63,7 +102,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Label Content="Base Bullet Damage"/>
-                <TextBox Grid.Column="1" Text="{Binding BaseBulletDamageString, UpdateSourceTrigger=PropertyChanged}"/>
+                <local:AutoSelectingTextbox Grid.Column="1" Text="{Binding BaseBulletDamageString, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
             </Grid>
 
             <Grid>
@@ -73,7 +112,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Label Content="Firearms"/>
-                <TextBox Grid.Column="1" Text="{Binding Firearms, UpdateSourceTrigger=PropertyChanged}"/>
+                <local:AutoSelectingTextbox Grid.Column="1" Text="{Binding Firearms, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
             </Grid>
 
             <Grid>
@@ -83,7 +122,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Label Content="Headshot Damage"/>
-                <TextBox Grid.Column="1" Text="{Binding HeadshotDamageString, UpdateSourceTrigger=PropertyChanged}"/>
+                <local:AutoSelectingTextbox Grid.Column="1" Text="{Binding HeadshotDamageString, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
             </Grid>
 
             <Grid>
@@ -93,9 +132,9 @@
                 </Grid.ColumnDefinitions>
 
                 <Label Content="Reload Speed"/>
-                <TextBox Grid.Column="1" Text="{Binding ReloadSpeedString, UpdateSourceTrigger=PropertyChanged}"/>
+                <local:AutoSelectingTextbox Grid.Column="1" Text="{Binding ReloadSpeedString, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
             </Grid>
-            
+
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
@@ -103,7 +142,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Label Content="Critical Hit Chance"/>
-                <TextBox Grid.Column="1" Text="{Binding CriticalHitChanceString, UpdateSourceTrigger=PropertyChanged}"/>
+                <local:AutoSelectingTextbox Grid.Column="1" Text="{Binding CriticalHitChanceString, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
             </Grid>
 
             <Grid>
@@ -113,7 +152,17 @@
                 </Grid.ColumnDefinitions>
 
                 <Label Content="Critical Hit Damage"/>
-                <TextBox Grid.Column="1" Text="{Binding CriticalHitDamageString, UpdateSourceTrigger=PropertyChanged}"/>
+                <local:AutoSelectingTextbox Grid.Column="1" Text="{Binding CriticalHitDamageString, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Magazine Size Bonus"/>
+                <local:AutoSelectingTextbox Grid.Column="1" Text="{Binding MagazineSizeBonusString, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
             </Grid>
 
             <Grid>
@@ -161,8 +210,8 @@
 
             </Grid>
 
-            <Button Height="30" Content="Calculate Firepower" Command="{Binding CalculateFirepowerButtonCommand}"/>
-            
+            <Button Height="30" Content="Calculate" Command="{Binding CalculateFirepowerButtonCommand}"/>
+
         </StackPanel>
     </Grid>
 </Window>

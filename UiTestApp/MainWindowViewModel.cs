@@ -1,11 +1,14 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 
 namespace UiTestApp
 {
-    public class MainWindowViewModel : INotifyPropertyChanged
+    public class MainWindowViewModel : BaseViewModel
     {
 
         #region Private Fields
@@ -24,6 +27,7 @@ namespace UiTestApp
 
         private double _headshotDamage;
         private string _headshotDamageString;
+        private int _baseMagazineSize;
         private double _reloadSpeed;
         private string _reloadSpeedString;
         private int _rpm;
@@ -36,8 +40,13 @@ namespace UiTestApp
         private double _weaponScaler;
         private string _weaponScalerString;
 
+        private Type _weaponType;
+        private Variant _weaponVariant;
+        private double _x;
+        private string _xString;
         private float decimals = 1000000;
-        private int _mag;
+        private double _magazineSizeBonus;
+        private string _magazineSizeBonusString;
 
         #endregion Private Fields
 
@@ -45,26 +54,33 @@ namespace UiTestApp
 
         public MainWindowViewModel()
         {
-            BaseBulletDamageString = "55076";
 
-            TimeToReloadString = "5";
-            Mag = 8;
-            Rpm = 150;
-            WeaponScalerString = "8";
-            Firearms = 3178;
-            HeadshotDamageString = "0,6";
+            var typesTableAdapter = new Database1DataSetTableAdapters.TypesTableAdapter();
+            TypesDataTable = typesTableAdapter.GetData();
+
+            WeaponTypes = new ObservableCollection<Type>(TypesDataTable.Select(typesRow => new Type(typesRow)));
+
+            var variantsTableAdapter = new Database1DataSetTableAdapters.VariantsTableAdapter();
+            VariantsDataTable = variantsTableAdapter.GetData();
+
+            var weaponsTableAdapter = new Database1DataSetTableAdapters.WeaponsTableAdapter();
+            WeaponsDataTable = weaponsTableAdapter.GetData();
+
+            var weapons = WeaponsDataTable.Select(weaponsRow => new Weapon(weaponsRow)).ToList();
+
+            BaseBulletDamageString = "10";
+            XString = "0,6";
+            Firearms = 1000;
             ReloadSpeedString = "0";
-            CriticalHitChanceString = "0";
-            CriticalHitDamageString = "0,4";
+            HeadshotDamageString = "0";
+            CriticalHitChanceString = "0,0";
+            CriticalHitDamageString = "0,0";
+            MagazineSizeBonusString = "0,0";
+
+            PropertyChanged += OnPropertyChanged;
         }
 
         #endregion Public Constructors
-
-        #region Public Events
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        #endregion Public Events
 
         #region Public Properties
 
@@ -74,7 +90,6 @@ namespace UiTestApp
             set
             {
                 _baseBulletDamage = value;
-                Recalculate();
                 OnPropertyChanged(nameof(BaseBulletDamage));
             }
         }
@@ -95,13 +110,14 @@ namespace UiTestApp
             }
         }
 
+        public ICommand CalculateFirepowerButtonCommand => new CommandHandler(Recalculate);
+
         public double CriticalHitChance
         {
             get { return _criticalHitChance; }
             set
             {
                 _criticalHitChance = value;
-                Recalculate();
                 OnPropertyChanged(nameof(CriticalHitChance));
             }
         }
@@ -128,7 +144,6 @@ namespace UiTestApp
             set
             {
                 _criticalHitDamage = value;
-                Recalculate();
                 OnPropertyChanged(nameof(CriticalHitDamage));
             }
         }
@@ -149,6 +164,33 @@ namespace UiTestApp
             }
         }
 
+        public double MagazineSizeBonus
+        {
+            get { return _magazineSizeBonus; }
+            set
+            {
+                _magazineSizeBonus = value;
+                MagazineSizeBonusString = _magazineSizeBonus.ToString();
+                OnPropertyChanged(nameof(MagazineSizeBonus));
+            }
+        }
+
+        public string MagazineSizeBonusString
+        {
+            get { return _magazineSizeBonusString; }
+            set
+            {
+                _magazineSizeBonusString = value;
+                OnPropertyChanged(nameof(MagazineSizeBonusString));
+
+                double number;
+                if (!double.TryParse(value, out number)) return;
+
+                if (Math.Abs(MagazineSizeBonus - number) > Tolerance)
+                    MagazineSizeBonus = number;
+            }
+        }
+
         public double CycleLength => DumpTime + ReloadTime;
 
         public int DisplayedFirepower => (int)Firepower;
@@ -157,7 +199,7 @@ namespace UiTestApp
 
         public double Dmg => 0;
 
-        public double DumpTime => Mag / Rps;
+        public double DumpTime => ModifiedMagazineSize / Rps;
 
         public int Firearms
         {
@@ -165,7 +207,6 @@ namespace UiTestApp
             set
             {
                 _firearms = value;
-                Recalculate();
                 OnPropertyChanged(nameof(Firearms));
             }
         }
@@ -187,7 +228,7 @@ namespace UiTestApp
             set
             {
                 _headshotDamage = value;
-                Recalculate();
+                HeadshotDamageString = _headshotDamage.ToString();
                 OnPropertyChanged(nameof(HeadshotDamage));
             }
         }
@@ -208,13 +249,24 @@ namespace UiTestApp
             }
         }
 
+        public int BaseMagazineSize
+        {
+            get { return _baseMagazineSize; }
+            set
+            {
+                _baseMagazineSize = value;
+                OnPropertyChanged(nameof(BaseMagazineSize));
+            }
+        }
+
+        public int ModifiedMagazineSize => (int)(BaseMagazineSize * (1 + MagazineSizeBonus));
+
         public double ReloadSpeed
         {
             get { return _reloadSpeed; }
             set
             {
                 _reloadSpeed = value;
-                Recalculate();
                 OnPropertyChanged(nameof(ReloadSpeed));
             }
         }
@@ -243,18 +295,6 @@ namespace UiTestApp
             set
             {
                 _rpm = value;
-                Recalculate();
-                OnPropertyChanged(nameof(Rpm));
-            }
-        }
-
-        public int Mag
-        {
-            get { return _mag; }
-            set
-            {
-                _mag = value;
-                Recalculate();
                 OnPropertyChanged(nameof(Rpm));
             }
         }
@@ -267,7 +307,7 @@ namespace UiTestApp
             set
             {
                 _timeToReload = value;
-                Recalculate();
+                TimeToReloadString = _timeToReload.ToString();
                 OnPropertyChanged(nameof(TimeToReload));
             }
         }
@@ -307,7 +347,7 @@ namespace UiTestApp
             set
             {
                 _weaponScaler = value;
-                Recalculate();
+                WeaponScalerString = _weaponScaler.ToString();
                 OnPropertyChanged(nameof(WeaponScaler));
             }
         }
@@ -328,18 +368,61 @@ namespace UiTestApp
             }
         }
 
-        public ICommand CalculateFirepowerButtonCommand => new CommandHandler(CalculateFirepower);
-
-        #endregion Public Properties
-
-        #region Protected Methods
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        public Type WeaponType
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            get { return _weaponType; }
+            set
+            {
+                _weaponType = value;
+                OnPropertyChanged(nameof(WeaponType));
+            }
         }
 
-        #endregion Protected Methods
+        public ObservableCollection<Type> WeaponTypes { get; set; }
+
+        public Variant WeaponVariant
+        {
+            get { return _weaponVariant; }
+            set
+            {
+                _weaponVariant = value;
+                OnPropertyChanged(nameof(WeaponVariant));
+            }
+        }
+
+        public ObservableCollection<Variant> WeaponVariants { get; set; }
+
+        public double X
+        {
+            get { return _x; }
+            set
+            {
+                _x = value;
+                OnPropertyChanged(nameof(X));
+            }
+        }
+
+        public string XString
+        {
+            get { return _xString; }
+            set
+            {
+                _xString = value;
+                OnPropertyChanged(nameof(XString));
+
+                double number;
+                if (!double.TryParse(value, out number)) return;
+
+                if (Math.Abs(X - number) > Tolerance)
+                    X = number;
+            }
+        }
+
+        public Database1DataSet.TypesDataTable TypesDataTable { get; set; }
+        public Database1DataSet.VariantsDataTable VariantsDataTable { get; set; }
+        public Database1DataSet.WeaponsDataTable WeaponsDataTable { get; set; }
+
+        #endregion Public Properties
 
         #region Private Methods
 
@@ -352,9 +435,9 @@ namespace UiTestApp
         private void CalculateFirepower()
         {
             var critDamagePart = WeaponDamage * CriticalHitChance * CriticalHitDamage;
-            var headshotDamagePart = WeaponDamage * (HeadshotDamage * 0.5);
+            var headshotDamagePart = WeaponDamage * (HeadshotDamage * X);
 
-            var scaledCycleDmg = Mag * (WeaponDamage + headshotDamagePart + critDamagePart);
+            var scaledCycleDmg = ModifiedMagazineSize * (WeaponDamage + headshotDamagePart + critDamagePart);
             var roundendCycleLength = (int)(CycleLength * decimals) / decimals;
             Firepower = scaledCycleDmg / roundendCycleLength;
         }
@@ -363,6 +446,35 @@ namespace UiTestApp
         {
             var scaledFireams = Firearms * WeaponScaler;
             WeaponDamage = (int)(BaseBulletDamage + scaledFireams);
+        }
+
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            var propertyName = propertyChangedEventArgs.PropertyName;
+
+            switch (propertyName)
+            {
+                case nameof(WeaponType):
+                    WeaponVariants = new ObservableCollection<Variant>(from variantsRow in VariantsDataTable
+                                                                       where variantsRow.Type == WeaponType.Name
+                                                                       select new Variant(variantsRow));
+                    OnPropertyChanged(nameof(WeaponVariants));
+                    break;
+                case nameof(WeaponVariant):
+
+                    if (WeaponVariant == null) return;
+
+                    TimeToReload = WeaponVariant.TimeToRelaod / 1000.0;
+                    Rpm = WeaponVariant.Rpm;
+                    BaseMagazineSize = WeaponVariant.Mag;
+                    WeaponScaler = WeaponVariant.Scaler;
+                    HeadshotDamage = WeaponVariant.HeadshotMultiplier - 1;
+
+                    break;
+                default:
+
+                    break;
+            }
         }
 
         private void Recalculate()

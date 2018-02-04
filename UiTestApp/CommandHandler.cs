@@ -6,7 +6,6 @@ namespace UiTestApp
 {
     public class CommandHandler : ICommand
     {
-
         private Action m_Action;
 
         public CommandHandler(Action action)

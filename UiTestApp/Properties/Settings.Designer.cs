@@ -33,5 +33,17 @@ namespace UiTestApp.Properties {
                 return ((string)(this["Database1ConnectionString"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=\"C:\\Users\\Karim\\Documents\\Vis" +
+            "ual Studio 2015\\Projects\\DivisionDamageCalculator\\Database\\Database1.mdf\";Integr" +
+            "ated Security=True;Connect Timeout=30")]
+        public string Database1ConnectionString1 {
+            get {
+                return ((string)(this["Database1ConnectionString1"]));
+            }
+        }
     }
 }
