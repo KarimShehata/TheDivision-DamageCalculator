@@ -76,7 +76,6 @@ namespace DatabasePopulator
                 variantRow.Range = int.Parse(variant[7]);
                 variantRow.TimeToRelaod = int.Parse(variant[8]);
                 variantRow.HeadshotMultiplier = double.Parse(variant[9].Replace(".",","));
-                variantRow.BonusType = variant[10];
 
                 dataSet.Variants.Rows.Add(variantRow);
             }
