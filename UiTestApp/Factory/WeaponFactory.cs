@@ -1,6 +1,6 @@
 using System.Linq;
 
-namespace UiTestApp
+namespace UiTestApp.Factory
 {
     public class WeaponFactory
     {

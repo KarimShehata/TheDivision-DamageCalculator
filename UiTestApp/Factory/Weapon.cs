@@ -1,4 +1,4 @@
-namespace UiTestApp
+namespace UiTestApp.Factory
 {
     public class Weapon
     {
@@ -6,6 +6,16 @@ namespace UiTestApp
         {
             Name = weaponsRow.Name;
             Variant = WeaponFactory.GetVariant(weaponsRow.Variant);
+        }
+
+        public Weapon(Variant variant)
+        {
+            Variant = variant;
+        }
+
+        public Weapon()
+        {
+            Variant = new Variant();
         }
 
         public Variant Variant { get; set; }

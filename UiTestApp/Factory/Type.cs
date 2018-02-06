@@ -1,4 +1,4 @@
-namespace UiTestApp
+namespace UiTestApp.Factory
 {
     public class Type
     {
@@ -8,7 +8,20 @@ namespace UiTestApp
             BonusType = typeRow.BonusType;
         }
 
+        public Type()
+        {
+        }
+
         public string Name { get; set; }
         public string BonusType { get; set; }
+
+        public Type Clone()
+        {
+            return new Type
+            {
+                Name = Name,
+                BonusType = BonusType
+            };
+        }
     }
 }

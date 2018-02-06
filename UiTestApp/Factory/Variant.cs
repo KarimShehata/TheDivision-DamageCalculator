@@ -1,4 +1,7 @@
-namespace UiTestApp
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+
+namespace UiTestApp.Factory
 {
     public class Variant
     {
@@ -12,6 +15,11 @@ namespace UiTestApp
             TimeToRelaod = variantRow.TimeToRelaod;
             HeadshotMultiplier = variantRow.HeadshotMultiplier;
             Type = WeaponFactory.GetType(variantRow.Type);
+        }
+
+        public Variant()
+        {
+            Type = new Type();
         }
 
         public double HeadshotMultiplier { get; set; }
@@ -29,5 +37,21 @@ namespace UiTestApp
         public Type Type { get; set; }
 
         public string Name { get; set; }
+
+        public Variant Clone()
+        {
+            return new Variant
+            {
+                HeadshotMultiplier = HeadshotMultiplier,
+                TimeToRelaod = TimeToRelaod,
+                Range = Range,
+                Mag = Mag,
+                Rpm = Rpm,
+                Scaler = Scaler,
+                Type = Type.Clone(),
+                Name = Name
+            };
+        }
+
     }
 }

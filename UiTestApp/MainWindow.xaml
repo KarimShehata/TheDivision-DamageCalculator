@@ -5,11 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UiTestApp"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="525">
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        Title="MainWindow" Height="Auto" Width="400">
     <Window.DataContext>
         <local:MainWindowViewModel/>
     </Window.DataContext>
-    <Grid Margin="20">
+    <Window.InputBindings>
+        <KeyBinding Key="Enter" Command="{Binding CalculateButtonCommand}" />
+    </Window.InputBindings>
+    <Grid Margin="10">
         <StackPanel>
 
             <Grid>
@@ -58,7 +63,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Label Content="RPM"/>
-                <local:AutoSelectingTextbox Grid.Column="1" Text="{Binding Rpm, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
+                <local:AutoSelectingTextbox Grid.Column="1" Text="{Binding Weapon.Variant.Rpm, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
 
             </Grid>
 
@@ -69,7 +74,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Label Content="MAG"/>
-                <local:AutoSelectingTextbox Grid.Column="1" Text="{Binding BaseMagazineSize, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
+                <local:AutoSelectingTextbox Grid.Column="1" Text="{Binding Weapon.Variant.Mag, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
 
             </Grid>
 
@@ -210,7 +215,7 @@
 
             </Grid>
 
-            <Button Height="30" Content="Calculate" Command="{Binding CalculateFirepowerButtonCommand}"/>
+            <Button Height="30" Content="Calculate" Command="{Binding CalculateButtonCommand}"/>
 
         </StackPanel>
     </Grid>

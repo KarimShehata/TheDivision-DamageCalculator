@@ -2,51 +2,61 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
-using System.Windows;
 using System.Windows.Input;
+using UiTestApp.Factory;
+using Type = UiTestApp.Factory.Type;
 
 namespace UiTestApp
 {
     public class MainWindowViewModel : BaseViewModel
     {
 
+        #region Public Fields
+
+        public List<string> RecalculatePropertyList = new List<string>
+        {
+            nameof(WeaponVariant),
+            nameof(Variant.Scaler),
+            nameof(Variant.Rpm),
+            nameof(Variant.Mag),
+            nameof(Variant.TimeToRelaod),
+            nameof(BaseBulletDamage),
+            nameof(Firearms),
+            nameof(HeadshotDamageString),
+            nameof(ReloadSpeed),
+            nameof(CriticalHitChance),
+            nameof(CriticalHitDamage),
+            nameof(MagazineSizeBonus)
+        };
+
+        #endregion Public Fields
+
         #region Private Fields
 
         private double _baseBulletDamage;
-
         private string _baseBulletDamageString;
         private double _criticalHitChance;
         private string _criticalHitChanceString;
         private double _criticalHitDamage;
         private string _criticalHitDamageString;
-
         private int _firearms;
-
         private double _firepower;
-
-        private double _headshotDamage;
         private string _headshotDamageString;
-        private int _baseMagazineSize;
+        private double _magazineSizeBonus;
+        private string _magazineSizeBonusString;
         private double _reloadSpeed;
         private string _reloadSpeedString;
-        private int _rpm;
-
-        private double _timeToReload;
-
         private string _timeToReloadString;
+        private Weapon _weapon;
         private int _weaponDamage;
-
-        private double _weaponScaler;
         private string _weaponScalerString;
-
         private Type _weaponType;
         private Variant _weaponVariant;
         private double _x;
         private string _xString;
         private float decimals = 1000000;
-        private double _magazineSizeBonus;
-        private string _magazineSizeBonusString;
 
         #endregion Private Fields
 
@@ -54,6 +64,7 @@ namespace UiTestApp
 
         public MainWindowViewModel()
         {
+            Weapon = new Weapon();
 
             var typesTableAdapter = new Database1DataSetTableAdapters.TypesTableAdapter();
             TypesDataTable = typesTableAdapter.GetData();
@@ -66,7 +77,7 @@ namespace UiTestApp
             var weaponsTableAdapter = new Database1DataSetTableAdapters.WeaponsTableAdapter();
             WeaponsDataTable = weaponsTableAdapter.GetData();
 
-            var weapons = WeaponsDataTable.Select(weaponsRow => new Weapon(weaponsRow)).ToList();
+            //var weapons = WeaponsDataTable.Select(weaponsRow => new Weapon(weaponsRow)).ToList();
 
             BaseBulletDamageString = "10";
             XString = "0,6";
@@ -110,7 +121,7 @@ namespace UiTestApp
             }
         }
 
-        public ICommand CalculateFirepowerButtonCommand => new CommandHandler(Recalculate);
+        public ICommand CalculateButtonCommand => new CommandHandler(Recalculate);
 
         public double CriticalHitChance
         {
@@ -164,38 +175,11 @@ namespace UiTestApp
             }
         }
 
-        public double MagazineSizeBonus
-        {
-            get { return _magazineSizeBonus; }
-            set
-            {
-                _magazineSizeBonus = value;
-                MagazineSizeBonusString = _magazineSizeBonus.ToString();
-                OnPropertyChanged(nameof(MagazineSizeBonus));
-            }
-        }
-
-        public string MagazineSizeBonusString
-        {
-            get { return _magazineSizeBonusString; }
-            set
-            {
-                _magazineSizeBonusString = value;
-                OnPropertyChanged(nameof(MagazineSizeBonusString));
-
-                double number;
-                if (!double.TryParse(value, out number)) return;
-
-                if (Math.Abs(MagazineSizeBonus - number) > Tolerance)
-                    MagazineSizeBonus = number;
-            }
-        }
-
         public double CycleLength => DumpTime + ReloadTime;
 
         public int DisplayedFirepower => (int)Firepower;
 
-        public int DisplayedWeaponDamage => (int)WeaponDamage;
+        public int DisplayedWeaponDamage => WeaponDamage;
 
         public double Dmg => 0;
 
@@ -222,44 +206,55 @@ namespace UiTestApp
             }
         }
 
-        public double HeadshotDamage
-        {
-            get { return _headshotDamage; }
-            set
-            {
-                _headshotDamage = value;
-                HeadshotDamageString = _headshotDamage.ToString();
-                OnPropertyChanged(nameof(HeadshotDamage));
-            }
-        }
-
         public string HeadshotDamageString
         {
-            get { return _headshotDamageString; }
+            get
+            {
+                return _headshotDamageString;
+            }
             set
             {
                 _headshotDamageString = value;
                 OnPropertyChanged(nameof(HeadshotDamageString));
 
                 double number;
-                if (!double.TryParse(value, out number)) return;
+                var canParse = double.TryParse(value, out number);
 
-                if (Math.Abs(HeadshotDamage - number) > Tolerance)
-                    HeadshotDamage = number;
+                if (!canParse) return;
+
+                if (Math.Abs(Weapon.Variant.HeadshotMultiplier - (1 + number)) > Tolerance)
+                    Weapon.Variant.HeadshotMultiplier = 1 + number;
             }
         }
 
-        public int BaseMagazineSize
+        public double MagazineSizeBonus
         {
-            get { return _baseMagazineSize; }
+            get { return _magazineSizeBonus; }
             set
             {
-                _baseMagazineSize = value;
-                OnPropertyChanged(nameof(BaseMagazineSize));
+                _magazineSizeBonus = value;
+                MagazineSizeBonusString = _magazineSizeBonus.ToString(CultureInfo.CurrentCulture);
+                OnPropertyChanged(nameof(MagazineSizeBonus));
             }
         }
 
-        public int ModifiedMagazineSize => (int)(BaseMagazineSize * (1 + MagazineSizeBonus));
+        public string MagazineSizeBonusString
+        {
+            get { return _magazineSizeBonusString; }
+            set
+            {
+                _magazineSizeBonusString = value;
+                OnPropertyChanged(nameof(MagazineSizeBonusString));
+
+                double number;
+                if (!double.TryParse(value, out number)) return;
+
+                if (Math.Abs(MagazineSizeBonus - number) > Tolerance)
+                    MagazineSizeBonus = number;
+            }
+        }
+
+        public int ModifiedMagazineSize => (int)(Weapon.Variant.Mag * (1 + MagazineSizeBonus));
 
         public double ReloadSpeed
         {
@@ -287,48 +282,47 @@ namespace UiTestApp
             }
         }
 
-        public double ReloadTime => TimeToReload / (1 + ReloadSpeed);
+        public double ReloadTime => Weapon.Variant.TimeToRelaod / 1000.0 / (1 + ReloadSpeed);
 
-        public int Rpm
-        {
-            get { return _rpm; }
-            set
-            {
-                _rpm = value;
-                OnPropertyChanged(nameof(Rpm));
-            }
-        }
-
-        public double Rps => Rpm / 60.0;
-
-        public double TimeToReload
-        {
-            get { return _timeToReload; }
-            set
-            {
-                _timeToReload = value;
-                TimeToReloadString = _timeToReload.ToString();
-                OnPropertyChanged(nameof(TimeToReload));
-            }
-        }
+        public double Rps => Weapon.Variant.Rpm / 60.0;
 
         public string TimeToReloadString
         {
-            get { return _timeToReloadString; }
+            get
+            {
+                return _timeToReloadString;
+            }
             set
             {
                 _timeToReloadString = value;
                 OnPropertyChanged(nameof(TimeToReloadString));
 
                 double number;
-                if (!double.TryParse(value, out number)) return;
+                var canParse = double.TryParse(value, out number);
 
-                if (Math.Abs(TimeToReload - number) > Tolerance)
-                    TimeToReload = number;
+                if (!canParse) return;
+
+                if (Math.Abs(Weapon.Variant.TimeToRelaod - number * 1000) > Tolerance)
+                    Weapon.Variant.TimeToRelaod = (int)(number * 1000);
             }
         }
 
         public double Tolerance => 0.001;
+
+        public Weapon Weapon
+        {
+            get { return _weapon; }
+            set
+            {
+                _weapon = value;
+
+                WeaponScalerString = _weapon.Variant.Scaler.ToString(CultureInfo.CurrentCulture);
+                TimeToReloadString = (_weapon.Variant.TimeToRelaod / 1000.0).ToString(CultureInfo.CurrentCulture);
+                HeadshotDamageString = (_weapon.Variant.HeadshotMultiplier - 1).ToString(CultureInfo.CurrentCulture);
+
+                OnPropertyChanged(nameof(Weapon));
+            }
+        }
 
         public int WeaponDamage
         {
@@ -341,30 +335,24 @@ namespace UiTestApp
             }
         }
 
-        public double WeaponScaler
-        {
-            get { return _weaponScaler; }
-            set
-            {
-                _weaponScaler = value;
-                WeaponScalerString = _weaponScaler.ToString();
-                OnPropertyChanged(nameof(WeaponScaler));
-            }
-        }
-
         public string WeaponScalerString
         {
-            get { return _weaponScalerString; }
+            get
+            {
+                return _weaponScalerString;
+            }
             set
             {
                 _weaponScalerString = value;
                 OnPropertyChanged(nameof(WeaponScalerString));
 
                 double number;
-                if (!double.TryParse(value, out number)) return;
+                var canParse = double.TryParse(value, out number);
 
-                if (Math.Abs(WeaponScaler - number) > Tolerance)
-                    WeaponScaler = number;
+                if (!canParse) return;
+
+                if (Math.Abs(Weapon.Variant.Scaler - number) > Tolerance)
+                    Weapon.Variant.Scaler = number;
             }
         }
 
@@ -428,14 +416,14 @@ namespace UiTestApp
 
         private void CalculateBaseBulletDamage()
         {
-            BaseBulletDamage = Convert.ToInt32(Math.Round(Dmg - Firearms * WeaponScaler));
+            BaseBulletDamage = Convert.ToInt32(Math.Round(Dmg - Firearms * Weapon.Variant.Scaler));
             Console.WriteLine($@"Base Bullet Damage Calculated: {BaseBulletDamage}");
         }
 
         private void CalculateFirepower()
         {
             var critDamagePart = WeaponDamage * CriticalHitChance * CriticalHitDamage;
-            var headshotDamagePart = WeaponDamage * (HeadshotDamage * X);
+            var headshotDamagePart = WeaponDamage * ((Weapon.Variant.HeadshotMultiplier - 1) * X);
 
             var scaledCycleDmg = ModifiedMagazineSize * (WeaponDamage + headshotDamagePart + critDamagePart);
             var roundendCycleLength = (int)(CycleLength * decimals) / decimals;
@@ -444,7 +432,7 @@ namespace UiTestApp
 
         private void CalculateWeaponDamage()
         {
-            var scaledFireams = Firearms * WeaponScaler;
+            var scaledFireams = Firearms * Weapon.Variant.Scaler;
             WeaponDamage = (int)(BaseBulletDamage + scaledFireams);
         }
 
@@ -464,14 +452,9 @@ namespace UiTestApp
 
                     if (WeaponVariant == null) return;
 
-                    TimeToReload = WeaponVariant.TimeToRelaod / 1000.0;
-                    Rpm = WeaponVariant.Rpm;
-                    BaseMagazineSize = WeaponVariant.Mag;
-                    WeaponScaler = WeaponVariant.Scaler;
-                    HeadshotDamage = WeaponVariant.HeadshotMultiplier - 1;
+                    Weapon = new Weapon(WeaponVariant.Clone());
 
-                    break;
-                default:
+                    Recalculate();
 
                     break;
             }
@@ -479,7 +462,7 @@ namespace UiTestApp
 
         private void Recalculate()
         {
-            if (BaseBulletDamage == 0)
+            if (Math.Abs(BaseBulletDamage) < 0.01)
                 CalculateBaseBulletDamage();
 
             CalculateWeaponDamage();
