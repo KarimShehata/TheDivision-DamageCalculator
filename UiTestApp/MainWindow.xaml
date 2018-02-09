@@ -95,7 +95,7 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
 
-                <Label Content="X"/>
+                <Label Content="WeaponTypeHeadshotChance"/>
                 <local:AutoSelectingTextbox Grid.Column="1" Text="{Binding XString, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
 
             </Grid>

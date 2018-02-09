@@ -54,7 +54,7 @@ namespace UiTestApp
         private string _weaponScalerString;
         private Type _weaponType;
         private Variant _weaponVariant;
-        private double _x;
+        private double _weaponTypeHeadshotChance;
         private string _xString;
         private float decimals = 1000000;
 
@@ -380,13 +380,13 @@ namespace UiTestApp
 
         public ObservableCollection<Variant> WeaponVariants { get; set; }
 
-        public double X
+        public double WeaponTypeHeadshotChance
         {
-            get { return _x; }
+            get { return _weaponTypeHeadshotChance; }
             set
             {
-                _x = value;
-                OnPropertyChanged(nameof(X));
+                _weaponTypeHeadshotChance = value;
+                OnPropertyChanged(nameof(WeaponTypeHeadshotChance));
             }
         }
 
@@ -401,8 +401,8 @@ namespace UiTestApp
                 double number;
                 if (!double.TryParse(value, out number)) return;
 
-                if (Math.Abs(X - number) > Tolerance)
-                    X = number;
+                if (Math.Abs(WeaponTypeHeadshotChance - number) > Tolerance)
+                    WeaponTypeHeadshotChance = number;
             }
         }
 
@@ -423,7 +423,7 @@ namespace UiTestApp
         private void CalculateFirepower()
         {
             var critDamagePart = CriticalHitChance * CriticalHitDamage;
-            var headshotDamagePart = (Weapon.Variant.HeadshotMultiplier - 1) * X;
+            var headshotDamagePart = (Weapon.Variant.HeadshotMultiplier - 1) * WeaponTypeHeadshotChance;
 
             var scaledCycleDmg = ModifiedMagazineSize * (WeaponDamage * (1 + headshotDamagePart + critDamagePart));
             var roundendCycleLength = (int)(CycleLength * decimals) / decimals;
