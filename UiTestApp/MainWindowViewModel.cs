@@ -79,14 +79,14 @@ namespace UiTestApp
 
             //var weapons = WeaponsDataTable.Select(weaponsRow => new Weapon(weaponsRow)).ToList();
 
-            BaseBulletDamageString = "10";
+            BaseBulletDamageString = "100";
             XString = "0,6";
-            Firearms = 1000;
-            ReloadSpeedString = "0";
-            HeadshotDamageString = "0";
-            CriticalHitChanceString = "0,0";
-            CriticalHitDamageString = "0,0";
-            MagazineSizeBonusString = "0,0";
+            Firearms = 100;
+            ReloadSpeedString = "0,5";
+            HeadshotDamageString = "1,5";
+            CriticalHitChanceString = "0,5";
+            CriticalHitDamageString = "0,5";
+            MagazineSizeBonusString = "0,5";
 
             PropertyChanged += OnPropertyChanged;
         }
@@ -422,10 +422,10 @@ namespace UiTestApp
 
         private void CalculateFirepower()
         {
-            var critDamagePart = WeaponDamage * CriticalHitChance * CriticalHitDamage;
-            var headshotDamagePart = WeaponDamage * ((Weapon.Variant.HeadshotMultiplier - 1) * X);
+            var critDamagePart = CriticalHitChance * CriticalHitDamage;
+            var headshotDamagePart = (Weapon.Variant.HeadshotMultiplier - 1) * X;
 
-            var scaledCycleDmg = ModifiedMagazineSize * (WeaponDamage + headshotDamagePart + critDamagePart);
+            var scaledCycleDmg = ModifiedMagazineSize * (WeaponDamage * (1 + headshotDamagePart + critDamagePart));
             var roundendCycleLength = (int)(CycleLength * decimals) / decimals;
             Firepower = scaledCycleDmg / roundendCycleLength;
         }
